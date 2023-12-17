@@ -59,14 +59,22 @@ export const getPost = async (req: Request, res: Response) => {
 
 // UPDATE ONE BY ID
 export const updatePost = async (req: Request, res: Response) => {
+    assertDefined(req.userId);
     try {
         assertDefined(req.userId);
         const post = await Post.findById(req.params.id);
 
         if (post?.author.toString() === req.userId) {
+            const updatedFields: { [key: string]: string } = {};
+
+            // Only update if given in the request body
+            if (req.body.title) updatedFields.title = req.body.title;
+            if (req.body.link) updatedFields.link = req.body.link;
+            if (req.body.body) updatedFields.body = req.body.body;
+
             const updatedPost = await Post.findByIdAndUpdate(
                 req.params.id,
-                { $set: req.body },
+                { $set: updatedFields },
                 { new: true }
             );
 
@@ -79,6 +87,7 @@ export const updatePost = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Failed to update post' });
     }
 };
+
 
 
 // DELETE ONE BY ID
