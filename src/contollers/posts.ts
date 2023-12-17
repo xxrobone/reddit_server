@@ -23,7 +23,7 @@ export const create = async (req: Request, res: Response) => {
 }
 
 export const getAllPosts = async (req: Request, res: Response) => {
-    const limit = parseInt(req.query.limit?.toString() || '5');
+    const limit = parseInt(req.query.limit?.toString() || '10');
     const page = parseInt(req.query.page?.toString() || '1')
 
     if (isNaN(page) || isNaN(limit)) {
@@ -56,3 +56,45 @@ export const getPost = async (req: Request, res: Response) => {
 
     res.status(200).json(post)
 }
+
+// UPDATE ONE BY ID
+export const updatePost = async (req: Request, res: Response) => {
+    try {
+        assertDefined(req.userId);
+        const post = await Post.findById(req.params.id);
+
+        if (post?.author.toString() === req.userId) {
+            const updatedPost = await Post.findByIdAndUpdate(
+                req.params.id,
+                { $set: req.body },
+                { new: true }
+            );
+
+            res.status(200).json(updatedPost);
+        } else {
+            res.status(401).json('You are not allowed to update this Post');
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Failed to update post' });
+    }
+};
+
+
+// DELETE ONE BY ID
+export const deletePost = async (req: Request, res: Response) => {
+    try {
+        assertDefined(req.userId);
+        const post = await Post.findById(req.params.id);
+
+        if (post?.author.toString() === req.userId) {
+            await Post.deleteOne({ _id: req.params.id });
+            res.status(200).json('Post deleted');
+        } else {
+            res.status(401).json('You are not allowed to delete this Post');
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Failed to delete post' });
+    }
+};

@@ -1,7 +1,7 @@
 import { Document, Schema, Types, model } from "mongoose";
 
 interface IComment extends Document {
-    body?: string;
+    body: string;
     author: Types.ObjectId;
     createdAt: Date;
     updatedAt: Date;

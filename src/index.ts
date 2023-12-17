@@ -21,6 +21,8 @@ app.get('/profile', validateToken, authController.profile);
 app.post('/posts', validateToken, postsController.create);
 app.get('/posts', postsController.getAllPosts);
 app.get('/posts/:id', postsController.getPost);
+app.put('/posts/:id', validateToken, postsController.updatePost);
+app.delete('/posts/:id', validateToken, postsController.deletePost);
 
 app.post('/posts/:postId/comments', validateToken, commentsController.createComment)
 app.delete('/posts/:postId/comments/:commentId', validateToken, commentsController.deleteComment)
@@ -31,14 +33,14 @@ if (!mongoURL) throw Error('Missing db url');
 
 mongoose.connect(mongoURL)
     .then(() => {
-        const port =process.env.PORT || 8080;
-        const admin = User.findOne({username: 'admin'})
+        const port =process.env.PORT || 8000;
+       /*  const admin = User.findOne({username: 'admin'})
         if (!admin) {
             User.create({
                 username: 'admin',
                 password: 'abcd'
             })
-        }
+        } */
         app.listen(port, () => {
             console.log('Server listening on port ' + port);
         })
