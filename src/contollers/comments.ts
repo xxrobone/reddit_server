@@ -1,29 +1,59 @@
 import { Request, Response } from "express";
 import Post from "../models/Post";
+import CommentModel from "../models/Comment";
+import User from "../models/User";
 import { assertDefined } from "../util/asserts";
 
 export const createComment = async (req: Request, res: Response) => {
     const { postId } = req.params;
-    const { userId } = req;
+    const userId = req.userId;
+
     assertDefined(userId);
 
-    const { commentBody } = req.body
+    console.log('userId:', userId);
+    console.log('postId:', postId);
 
-    const post = await Post.findById(postId);
+    const { commentBody } = req.body;
 
-    if (!post) {
-        return res.status(404).json({ message: 'Not post found for id: ' + postId });
+    try {
+        const post = await Post.findById(postId);
+
+        if (!post) {
+            return res.status(404).json({ message: 'No post found for id: ' + postId });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'No user found for id: ' + userId });
+        }
+
+        const newComment = new CommentModel({
+            body: commentBody,
+            userId: userId,
+            postId: post._id,
+            author: userId, 
+        });
+
+        post.comments.push(newComment);
+
+        const savedPost = await post.save();
+
+        const populatedPost = await savedPost
+            .populate({
+                path: 'comments',
+                populate: {
+                    path: 'author',
+                    select: 'username', 
+                },
+            });
+
+        res.status(201).json(populatedPost);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Failed to create comment' });
     }
+};
 
-    post.comments.push({
-        body: commentBody,
-        author: userId
-    });
-
-    const savedPost = await post.save();
-
-    res.status(201).json(savedPost);
-}
 
 export const deleteComment = async (req: Request, res: Response) => {
     const { postId, commentId } = req.params;

@@ -35,7 +35,8 @@ export const getAllPosts = async (req: Request, res: Response) => {
         .limit(limit)
         .skip(limit * (page - 1))
         .sort({ createAt: 'desc'})
-        .populate("author");
+        .populate("author")
+        .exec();
 
     const totalCount = await Post.countDocuments();
 
