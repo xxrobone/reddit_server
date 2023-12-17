@@ -42,13 +42,15 @@ export const deleteComment = async (req: Request, res: Response) => {
         return res.status(404).json({ message: 'Not comment found for id: ' + commentId });
     }
 
-    if (comment.author.toString() !== userId) {
+    const commentAny = comment as any;
+
+    if (commentAny.author.toString() !== userId) {
         return res.status(403).json({ message: 'Not authorized' });
     }
 
-    comment.deleteOne()
+    commentAny.deleteOne();
 
     const updatedPost = await post.save();
 
-    return res.status(200).json(updatedPost)
+    return res.status(200).json(updatedPost);
 }

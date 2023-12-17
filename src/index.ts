@@ -13,7 +13,7 @@ const app = express()
 app.use(cors());
 app.use(express.json());
 
-app.post('/register', authController.register);
+app.post('/signup', authController.register);
 app.post('/login', authController.logIn);
 app.post('/token/refresh', authController.refreshJWT);
 app.get('/profile', validateToken, authController.profile);
