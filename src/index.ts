@@ -6,6 +6,7 @@ import * as authController from './contollers/auth';
 import * as postsController from './contollers/posts';
 import * as commentsController from './contollers/comments';
 import validateToken from "./middleware/validateToken";
+import * as votesController from './contollers/votesController'
 import User from "./models/User";
 
 const app = express()
@@ -26,6 +27,9 @@ app.delete('/posts/:id', validateToken, postsController.deletePost);
 
 app.post('/posts/:postId/comments', validateToken, commentsController.createComment)
 app.delete('/posts/:postId/comments/:commentId', validateToken, commentsController.deleteComment)
+
+app.post('/posts/:postId/upvote', validateToken, votesController.upvote)
+app.post('/posts/:postId/downvote', validateToken, votesController.downvote)
 
 const mongoURL = process.env.MONGO_DOCKER_URI;
 
