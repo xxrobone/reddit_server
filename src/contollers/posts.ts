@@ -34,7 +34,7 @@ export const getAllPosts = async (req: Request, res: Response) => {
         .find({}, '-comments')
         .limit(limit)
         .skip(limit * (page - 1))
-        .sort({ createAt: 'desc'})
+        .sort({ createAt: 'desc', score: 'desc'})
         .populate("author")
         .exec();
 

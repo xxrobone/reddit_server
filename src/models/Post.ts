@@ -82,7 +82,7 @@ PostSchema.method('downvote', async function (this: IPost, userId: string) {
     // could throw and error message here 
     return
   } else if (this.upvotes.includes(userIdObject)) {
-    this.downvotes.pull(userIdObject)
+    this.upvotes.pull(userIdObject)
   }
 
   this.downvotes.push(userIdObject)
